@@ -6,9 +6,6 @@ import (
     "log"
     "os"
     "time"
-    "bufio"
-    "io/ioutil"
-    "strings"
     "github.com/urfave/cli"
     "gopkg.in/resty.v1"
 )
@@ -27,7 +24,7 @@ type AuthSuccess struct {
     Public bool `json:"public"`
 }
 
-func authenticate(email string, password string, server string) {
+func authenticate(email string, password string, host string) {
     var auth AuthSuccess
 
     user := &User{Email: email, Password: password}
@@ -41,7 +38,7 @@ func authenticate(email string, password string, server string) {
           SetHeader("Content-Type", "application/json").
           SetBody(body).
           SetResult(&auth).
-          Post(strings.Join(server, "/_/auth/authenticate") 
+          Post(fmt.Sprintf("https://%s/_/auth/authenticate", host))
 
     fmt.Println(auth.Data.Token)
 }
@@ -70,9 +67,9 @@ func main() {
 
     app.Flags = []cli.Flag {
         cli.StringFlag{
-            Name: "server",
-            Value: "https://2s.re.kr/",
-            Usage: "set server url",
+            Name: "host",
+            Value: "2s.re.kr",
+            Usage: "set server hostname",
         },
         cli.StringFlag{
             Name: "lang",
@@ -109,7 +106,7 @@ func main() {
 
     app.Action = func(c *cli.Context) error {
         if c.String("token") == "" {
-            authenticate(c.String("email"), c.String("password"))
+            authenticate(c.String("email"), c.String("password"), c.String("host"))
             return nil
         }
         
