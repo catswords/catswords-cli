@@ -6,6 +6,7 @@ import (
     "log"
     "os"
     "time"
+    "io/ioutil"
     "github.com/urfave/cli"
     "gopkg.in/resty.v1"
 )
@@ -38,15 +39,18 @@ type MessageContext struct {
     EncryptionIv string `json:"encryption_iv"`
 }
 
+func check(e error) {
+    if e != nil {
+        panic(e)
+    }
+}
+
 func authenticate(email string, password string, host string) {
     var auth AuthSuccess
 
     user := &User{Email: email, Password: password}
     body, err := json.Marshal(user)
-    if err != nil {
-        fmt.Println(err)
-        return
-    }
+    check(err)
 
     resty.R().
           SetHeader("Content-Type", "application/json").
@@ -54,7 +58,9 @@ func authenticate(email string, password string, host string) {
           SetResult(&auth).
           Post(fmt.Sprintf("https://%s/_/auth/authenticate", host))
 
-    fmt.Println(auth.Data.Token)
+    tokenBytes := []byte(auth.Data.Token)
+    err2 := ioutil.WriteFile("token.dat", tokenBytes, 0644)
+    check(err2)
 }
 
 func main() {
