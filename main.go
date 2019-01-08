@@ -6,6 +6,9 @@ import (
     "log"
     "os"
     "time"
+    "bufio"
+    "io/ioutil"
+    "strings"
     "github.com/urfave/cli"
     "gopkg.in/resty.v1"
 )
@@ -15,7 +18,18 @@ type User struct {
     Password string `json:"password"`
 }
 
-func authenticate(email string, password string) {
+type AuthToken struct {
+    Token string `json:"token"`
+}
+
+type AuthSuccess struct {
+    Data AuthToken `json:"data"`
+    Public bool `json:"public"`
+}
+
+func authenticate(email string, password string, server string) {
+    var auth AuthSuccess
+
     user := &User{Email: email, Password: password}
     body, err := json.Marshal(user)
     if err != nil {
@@ -23,12 +37,13 @@ func authenticate(email string, password string) {
         return
     }
 
-    resp, err := resty.R().
+    resty.R().
           SetHeader("Content-Type", "application/json").
           SetBody(body).
-          Post("https://2s.re.kr/_/auth/authenticate")
+          SetResult(&auth).
+          Post(strings.Join(server, "/_/auth/authenticate") 
 
-    fmt.Println(resp, err)
+    fmt.Println(auth.Data.Token)
 }
 
 func main() {
