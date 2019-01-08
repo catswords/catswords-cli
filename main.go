@@ -24,6 +24,20 @@ type AuthSuccess struct {
     Public bool `json:"public"`
 }
 
+type MessageContext struct {
+    Status string `json:"status"`
+    Message string `json:"message"`
+    Agent string `json:"agent"`
+    Format string `json:"format"`
+    Delimiter string `json:"delimiter"`
+    Encoding string `json:"encoding"`
+    Mime string `json:"mime"`
+    Label string `json:"label"`
+    Encryption string `json:"encryption"`
+    EncryptionKey string `json:"encryption_key"`
+    EncryptionIv string `json:"encryption_iv"`
+}
+
 func authenticate(email string, password string, host string) {
     var auth AuthSuccess
 
@@ -46,7 +60,7 @@ func authenticate(email string, password string, host string) {
 func main() {
     app := cli.NewApp()
     app.Name = "Catswords Community CLI"
-    app.Usage = "Message broadcaster and receiver"
+    app.Usage = "Message broadcaster"
     app.Version = "0.1"
     app.Compiled = time.Now()
     app.Authors = []cli.Author{
@@ -63,7 +77,7 @@ func main() {
             Email: "support@2s.re.kr",
         },
     }
-    app.Copyright = "(C) 2019 Catswords Research."
+    app.Copyright = "(c) 2019 Catswords Research."
 
     app.Flags = []cli.Flag {
         cli.StringFlag{
@@ -75,11 +89,6 @@ func main() {
             Name: "lang",
             Value: "english",
             Usage: "set language",
-        },
-        cli.StringFlag{
-            Name: "format",
-            Value: "text",
-            Usage: "set message type: text, json, xml, or more",
         },
         cli.StringFlag{
             Name: "email",
@@ -101,6 +110,51 @@ func main() {
             Name: "message",
             Value: "",
             Usage: "set message it will send to server",
+        },
+        cli.StringFlag{
+            Name: "format",
+            Value: "text",
+            Usage: "set message type: text, json, xml, rfc5424(syslog), or more",
+        },
+        cli.StringFlag{
+            Name: "delimiter",
+            Value: "",
+            Usage: "set delimiter: comma, or pipeline, or more",
+        },
+        cli.StringFlag{
+            Name: "encoding",
+            Value: "utf-8",
+            Usage: "set encoding: character set, or encapsulation, or more",
+        },
+        cli.StringFlag{
+            Name: "mine",
+            Value: "text/plain",
+            Usage: "set media type: text/plain, or application/json, or more",
+        },
+        cli.StringFlag{
+            Name: "label",
+            Value: "",
+            Usage: "set custom label(s) to each columns",
+        },
+        cli.StringFlag{
+            Name: "agent",
+            Value: "",
+            Usage: "set custom agent name",
+        },
+        cli.StringFlag{
+            Name: "encryption,enc",
+            Value: "",
+            Usage: "set encryption: cipher(DES, AES), or hasher(MD5, SHA1, SHA256), or more",
+        },
+        cli.StringFlag{
+            Name: "encryption-key,ekey",
+            Value: "",
+            Usage: "set encryption key",
+        },
+        cli.StringFlag{
+            Name: "encryption-iv,eiv",
+            Value: "",
+            Usage: "set encryption IV",
         },
     }
 
