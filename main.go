@@ -256,7 +256,7 @@ func main() {
         }
 
         if c.String("email") != "" {
-            fmt.Println("Done authenticate. if you want refresh token, add flag '--refresh y'")
+            fmt.Println("Done authenticate. You can add flag '--refresh y' when the token expired")
             return nil
         }
 
