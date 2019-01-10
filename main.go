@@ -54,7 +54,7 @@ func check(e error) {
     }
 }
 
-func authenticate(email string, password string, host string) {
+func authenticate (email string, password string, host string) string {
     var auth AuthSuccess
 
     user := &User{Email: email, Password: password}
@@ -70,6 +70,24 @@ func authenticate(email string, password string, host string) {
     tokenBytes := []byte(auth.Data.Token)
     err2 := ioutil.WriteFile("token.dat", tokenBytes, 0644)
     check(err2)
+
+    result := string(tokenBytes)
+
+    return result
+}
+
+func sendMessage(context MessageContext, host string, token string) {
+    body, err := json.Marshal(context)
+    check(err)
+
+    // post data to server
+    resp, err := resty.R().
+          SetHeader("Content-Type", "application/json").
+          SetBody(body).
+          SetAuthToken(token).
+          Post(fmt.Sprintf("https://%s/_/items/catswords_cli", host))
+
+    fmt.Println(resp)
 }
 
 func main() {
@@ -219,13 +237,41 @@ func main() {
     }
 
     app.Action = func(c *cli.Context) error {
-        if c.String("token") == "" {
-            authenticate(c.String("email"), c.String("password"), c.String("host"))
+        token := c.String("token")
+        if token == "" {
+            token = authenticate(c.String("email"), c.String("password"), c.String("host"))
+        }
+
+        if token == "" {
+            fmt.Println("Could not find access token")
             return nil
         }
-        
-        
-        
+
+        // set message context
+        msgContext := MessageContext{
+            Status: "published",
+            Message: c.String("message"),
+            Agent: c.String("agent"),
+            Format: c.String("format"),
+            Delimiter: c.String("delimiter"),
+            Encoding: c.String("encoding"),
+            Mime: c.String("mime"),
+            Label: c.String("label"),
+            Encryption: c.String("encryption"),
+            EncryptionKey: c.String("encryption-key"),
+            EncryptionIv: c.String("encryption-iv"),
+            PrivateKey: c.String("private-key"),
+            PublicKey: c.String("public-key"),
+            HashFunction: c.String("hash-function"),
+            HashValue: c.String("hash-value"),
+            Mnemonic: c.String("mnemonic"),
+            IntNetwork: c.String("int-network"),
+            IntAddress: c.String("int-address"),
+            ExtNetwork: c.String("ext-network"),
+            ExtAddress: c.String("ext-address"),
+        }
+        sendMessage(msgContext, c.String("host"), token)
+
         return nil
     }
 
