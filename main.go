@@ -37,6 +37,15 @@ type MessageContext struct {
     Encryption string `json:"encryption"`
     EncryptionKey string `json:"encryption_key"`
     EncryptionIv string `json:"encryption_iv"`
+    PrivateKey string `json:"private_key"`
+    PublicKey string `json:"public_key"`
+    HashFunction string `json:"hash_function"`
+    HashValue string `json:"hash_value"`
+    Mnemonic string `json:"mnemonic"`
+    IntNetwork string `json:"int_network"`
+    IntAddress string `json:"int_address"`
+    ExtNetwork string `json:"ext_network"`
+    ExtAddress string `json:"ext_address"`
 }
 
 func check(e error) {
@@ -124,7 +133,7 @@ func main() {
         },
         cli.StringFlag{
             Name: "delimiter",
-            Value: "",
+            Value: ",",
             Usage: "set delimiter: comma, or pipeline, or more",
         },
         cli.StringFlag{
@@ -138,7 +147,7 @@ func main() {
             Usage: "set media type: text/plain, or application/json, or more",
         },
         cli.StringFlag{
-            Name: "label",
+            Name: "label,labels",
             Value: "",
             Usage: "set custom label(s) to each columns",
         },
@@ -150,7 +159,7 @@ func main() {
         cli.StringFlag{
             Name: "encryption,enc",
             Value: "",
-            Usage: "set encryption: cipher(DES, AES), or hasher(MD5, SHA1, SHA256), or more",
+            Usage: "set encryption algorithm: des, or aes, or more",
         },
         cli.StringFlag{
             Name: "encryption-key,ekey",
@@ -162,6 +171,51 @@ func main() {
             Value: "",
             Usage: "set encryption IV",
         },
+        cli.StringFlag{
+            Name: "private-key,privkey",
+            Value: "",
+            Usage: "set private key",
+        },
+        cli.StringFlag{
+            Name: "public-key,pubkey",
+            Value: "",
+            Usage: "set public key",
+        },
+        cli.StringFlag{
+            Name: "hash-function,hasher",
+            Value: "",
+            Usage: "set hash function(s) with delimiter: md5, or sha1, or sha256, or more",
+        },
+        cli.StringFlag{
+            Name: "hash-value,hash",
+            Value: "",
+            Usage: "set hash value(s) with delimiter",
+        },
+        cli.StringFlag{
+            Name: "mnemonic",
+            Value: "",
+            Usage: "set mnemonic",
+        },
+        cli.StringFlag{
+            Name: "int-network,innet",
+            Value: "",
+            Usage: "set internal network name",
+        },
+        cli.StringFlag{
+            Name: "int-address,inaddr",
+            Value: "",
+            Usage: "set address of specified internal network",
+        },
+        cli.StringFlag{
+            Name: "ext-network,exnet",
+            Value: "",
+            Usage: "set external network name",
+        },
+        cli.StringFlag{
+            Name: "ext-address,exaddr",
+            Value: "",
+            Usage: "set address of specified external network",
+        },
     }
 
     app.Action = func(c *cli.Context) error {
@@ -169,6 +223,8 @@ func main() {
             authenticate(c.String("email"), c.String("password"), c.String("host"))
             return nil
         }
+        
+        
         
         return nil
     }
