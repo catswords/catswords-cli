@@ -46,6 +46,8 @@ type MessageContext struct {
     IntAddress string `json:"int_address"`
     ExtNetwork string `json:"ext_network"`
     ExtAddress string `json:"ext_address"`
+    Host string `json:"host"`
+    Lang string `json:"lang"`
 }
 
 func check(e error) {
@@ -138,6 +140,11 @@ func main() {
             Value: "",
             Usage: "set access token",
             FilePath: "token.dat",
+        },
+        cli.StringFlag{
+            Name: "refresh",
+            Value: "n",
+            Usage: "refresh token: y/n",
         },
         cli.StringFlag{
             Name: "message",
@@ -238,12 +245,18 @@ func main() {
 
     app.Action = func(c *cli.Context) error {
         token := c.String("token")
-        if token == "" {
+        if (token == "" || c.String("refresh") == "y") {
             token = authenticate(c.String("email"), c.String("password"), c.String("host"))
+            fmt.Println(token)
         }
 
         if token == "" {
             fmt.Println("Could not find access token")
+            return nil
+        }
+
+        if c.String("email") != "" {
+            fmt.Println("Done authenticate. if you want refresh token, add flag '--refresh y'")
             return nil
         }
 
@@ -269,6 +282,8 @@ func main() {
             IntAddress: c.String("int-address"),
             ExtNetwork: c.String("ext-network"),
             ExtAddress: c.String("ext-address"),
+            Host: c.String("host"),
+            Lang: c.String("lang"),
         }
         sendMessage(msgContext, c.String("host"), token)
 
