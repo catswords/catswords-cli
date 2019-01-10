@@ -167,7 +167,7 @@ func main() {
         cli.StringFlag{
             Name: "label,labels",
             Value: "",
-            Usage: "set custom label(s) to each columns",
+            Usage: "set label(s) with delimiter",
         },
         cli.StringFlag{
             Name: "agent",
