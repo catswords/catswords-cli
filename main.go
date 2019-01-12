@@ -56,6 +56,7 @@ type MessageContext struct {
     NetworkId string `json:"network_id"`
     AccessKey string `json:"access_key"`
     AccessSecret string `json:"access_secret"`
+    Protocol string `json:"protocol"`
 }
 
 func check(e error) {
@@ -298,7 +299,7 @@ func main() {
             fmt.Println("Done authenticate. You have to add flag '--action refresh' when the token expired")
             return nil
         }
-        
+
         if c.String("action") == "recv" {
             if c.String("network-id") == "" {
                 fmt.Println("You must be set network ID '--network-id [your network ID]'")
@@ -333,6 +334,7 @@ func main() {
                 NetworkId: c.String("network-id"),
                 AccessKey: c.String("access-key"),
                 AccessSecret: c.String("access-secret"),
+                Protocol: c.String("protocol"),
             }
             sendMessage(msgContext, token, c.String("host"), c.String("protocol"))
         }
