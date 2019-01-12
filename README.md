@@ -2,7 +2,7 @@
 catswords-cli
 
 ## show help
-"""
+```
 NAME:
    Catswords Community CLI - Message broadcaster
 
@@ -55,4 +55,4 @@ GLOBAL OPTIONS:
 
 COPYRIGHT:
    (c) 2019 Catswords Research.
-"""
+```
