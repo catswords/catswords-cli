@@ -64,7 +64,7 @@ func check(e error) {
     }
 }
 
-func authenticate (email string, password string, host string) string {
+func authenticate (email string, password string, host string, protocol string) string {
     var auth AuthSuccess
 
     user := &User{Email: email, Password: password}
@@ -75,7 +75,7 @@ func authenticate (email string, password string, host string) string {
           SetHeader("Content-Type", "application/json").
           SetBody(body).
           SetResult(&auth).
-          Post(fmt.Sprintf("https://%s/_/auth/authenticate", host))
+          Post(fmt.Sprintf("%s://%s/_/auth/authenticate", protocol, host))
 
     tokenBytes := []byte(auth.Data.Token)
     err2 := ioutil.WriteFile("token.dat", tokenBytes, 0644)
@@ -86,7 +86,7 @@ func authenticate (email string, password string, host string) string {
     return result
 }
 
-func sendMessage(context MessageContext, host string, token string) {
+func sendMessage(context MessageContext, token string, host string, protocol string) {
     body, err := json.Marshal(context)
     check(err)
 
@@ -95,17 +95,17 @@ func sendMessage(context MessageContext, host string, token string) {
           SetHeader("Content-Type", "application/json").
           SetBody(body).
           SetAuthToken(token).
-          Post(fmt.Sprintf("https://%s/_/items/catswords_cli", host))
+          Post(fmt.Sprintf("%s://%s/_/items/catswords_cli", protocol, host))
     check(err)
 
     fmt.Println(resp)
 }
 
-func recvMessages(host string, token string, networkId string) {
+func recvMessages(networkId string, token string, host string, protocol string) {
     resp, err := resty.R().
           SetHeader("Accept", "application/json").
           SetAuthToken(token).
-          Get(fmt.Sprintf("https://%s/_/items/catswords_cli?filter[network_id][eq]=%s", host, networkId))
+          Get(fmt.Sprintf("%s://%s/_/items/catswords_cli?filter[network_id][eq]=%s", protocol, host, networkId))
     check(err)
 
     fmt.Println(resp)
@@ -159,6 +159,11 @@ func main() {
             Value: "",
             Usage: "set access token",
             FilePath: "token.dat",
+        },
+        cli.StringFlag{
+            Name: "protocol",
+            Value: "https",
+            Usage: "set protocol: https, or http, or more",
         },
         cli.StringFlag{
             Name: "action",
@@ -280,7 +285,7 @@ func main() {
     app.Action = func(c *cli.Context) error {
         token := c.String("token")
         if (token == "" || c.String("action") == "refresh") {
-            token = authenticate(c.String("email"), c.String("password"), c.String("host"))
+            token = authenticate(c.String("email"), c.String("password"), c.String("host"), c.String("protocol"))
             fmt.Println(token)
         }
 
@@ -296,11 +301,10 @@ func main() {
         
         if c.String("action") == "recv" {
             if c.String("network-id") == "" {
-                fmt.Println("You must be set network ID")
+                fmt.Println("You must be set network ID '--network-id [your network ID]'")
                 return nil
             }
-
-            recvMessages(c.String("host"), token, c.String("network-id"))
+            recvMessages(c.String("network-id"), token, c.String("host"), c.String("protocol"))
         } else {
             // set message context
             msgContext := MessageContext{
@@ -330,9 +334,8 @@ func main() {
                 AccessKey: c.String("access-key"),
                 AccessSecret: c.String("access-secret"),
             }
-            sendMessage(msgContext, c.String("host"), token)
+            sendMessage(msgContext, token, c.String("host"), c.String("protocol"))
         }
-
         return nil
     }
 
