@@ -27,7 +27,7 @@ GLOBAL OPTIONS:
    --password value                       set user password
    --token value                          set access token [token.dat]
    --protocol value                       set protocol: https, or http, or more (default: "https")
-   --action value                         send, or recv, or refresh (default: "send")
+   --action value                         set action: send, or recv, or refresh (default: "send")
    --message value                        set message it will send to server
    --format value                         set message type: text, json, xml, rfc5424(syslog), or more (default: "text")
    --delimiter value                      set delimiter: comma, or pipeline, or more (default: ",")
