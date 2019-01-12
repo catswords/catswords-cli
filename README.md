@@ -3,6 +3,7 @@ catswords-cli
 
 ## show help
 ```
+$ ./catswords-cli help
 NAME:
    Catswords Community CLI - Message broadcaster
 
@@ -29,8 +30,9 @@ GLOBAL OPTIONS:
    --protocol value                       set protocol: https, or http, or more (default: "https")
    --action value                         set action: send, or recv, or refresh (default: "send")
    --message value                        set message it will send to server
+   --file value                           set file path instead of message
    --format value                         set message type: text, json, xml, rfc5424(syslog), or more (default: "text")
-   --delimiter value                      set delimiter: comma, or pipeline, or more (default: ",")
+   --delimiter value                      set delimiter: comma, or pipeline, or more (default: "comma")
    --encoding value                       set encoding: character set, or encapsulation, or more (default: "utf-8")
    --mine value                           set media type: text/plain, or application/json, or more (default: "text/plain")
    --label value, --labels value          set label(s) with delimiter
@@ -55,4 +57,5 @@ GLOBAL OPTIONS:
 
 COPYRIGHT:
    (c) 2019 Catswords Research.
+
 ```
