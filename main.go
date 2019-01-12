@@ -1,3 +1,8 @@
+// @file main.go
+// @brief Catswords Community CLI
+// @author Go Namhyeon <gnh1201@gmail.com>
+// @created 2019-01-09
+
 package main
 
 import (
@@ -48,6 +53,9 @@ type MessageContext struct {
     ExtAddress string `json:"ext_address"`
     Host string `json:"host"`
     Lang string `json:"lang"`
+    NetworkId string `json:"network_id"`
+    AccessKey string `json:"access_key"`
+    AccessSecret string `json:"access_secret"`
 }
 
 func check(e error) {
@@ -88,6 +96,17 @@ func sendMessage(context MessageContext, host string, token string) {
           SetBody(body).
           SetAuthToken(token).
           Post(fmt.Sprintf("https://%s/_/items/catswords_cli", host))
+    check(err)
+
+    fmt.Println(resp)
+}
+
+func recvMessages(host string, token string, networkId string) {
+    resp, err := resty.R().
+          SetHeader("Accept", "application/json").
+          SetAuthToken(token).
+          Get(fmt.Sprintf("https://%s/_/items/catswords_cli?filter[network_id][eq]=%s", host, networkId))
+    check(err)
 
     fmt.Println(resp)
 }
@@ -142,9 +161,9 @@ func main() {
             FilePath: "token.dat",
         },
         cli.StringFlag{
-            Name: "refresh",
-            Value: "n",
-            Usage: "refresh token: y/n",
+            Name: "action",
+            Value: "send",
+            Usage: "send, or recv, or refresh",
         },
         cli.StringFlag{
             Name: "message",
@@ -241,11 +260,26 @@ func main() {
             Value: "",
             Usage: "set address of specified external network",
         },
+        cli.StringFlag{
+            Name: "network-id,netid",
+            Value: "",
+            Usage: "set network ID",
+        },
+        cli.StringFlag{
+            Name: "access-key,akey",
+            Value: "",
+            Usage: "set access key",
+        },
+        cli.StringFlag{
+            Name: "access-secret,asec",
+            Value: "",
+            Usage: "set access secret",
+        },
     }
 
     app.Action = func(c *cli.Context) error {
         token := c.String("token")
-        if (token == "" || c.String("refresh") == "y") {
+        if (token == "" || c.String("action") == "refresh") {
             token = authenticate(c.String("email"), c.String("password"), c.String("host"))
             fmt.Println(token)
         }
@@ -256,36 +290,48 @@ func main() {
         }
 
         if c.String("email") != "" {
-            fmt.Println("Done authenticate. You can add flag '--refresh y' when the token expired")
+            fmt.Println("Done authenticate. You have to add flag '--action refresh' when the token expired")
             return nil
         }
+        
+        if c.String("action") == "recv" {
+            if c.String("network-id") == "" {
+                fmt.Println("You must be set network ID")
+                return nil
+            }
 
-        // set message context
-        msgContext := MessageContext{
-            Status: "published",
-            Message: c.String("message"),
-            Agent: c.String("agent"),
-            Format: c.String("format"),
-            Delimiter: c.String("delimiter"),
-            Encoding: c.String("encoding"),
-            Mime: c.String("mime"),
-            Label: c.String("label"),
-            Encryption: c.String("encryption"),
-            EncryptionKey: c.String("encryption-key"),
-            EncryptionIv: c.String("encryption-iv"),
-            PrivateKey: c.String("private-key"),
-            PublicKey: c.String("public-key"),
-            HashFunction: c.String("hash-function"),
-            HashValue: c.String("hash-value"),
-            Mnemonic: c.String("mnemonic"),
-            IntNetwork: c.String("int-network"),
-            IntAddress: c.String("int-address"),
-            ExtNetwork: c.String("ext-network"),
-            ExtAddress: c.String("ext-address"),
-            Host: c.String("host"),
-            Lang: c.String("lang"),
+            recvMessages(c.String("host"), token, c.String("network-id"))
+        } else {
+            // set message context
+            msgContext := MessageContext{
+                Status: "published",
+                Message: c.String("message"),
+                Agent: c.String("agent"),
+                Format: c.String("format"),
+                Delimiter: c.String("delimiter"),
+                Encoding: c.String("encoding"),
+                Mime: c.String("mime"),
+                Label: c.String("label"),
+                Encryption: c.String("encryption"),
+                EncryptionKey: c.String("encryption-key"),
+                EncryptionIv: c.String("encryption-iv"),
+                PrivateKey: c.String("private-key"),
+                PublicKey: c.String("public-key"),
+                HashFunction: c.String("hash-function"),
+                HashValue: c.String("hash-value"),
+                Mnemonic: c.String("mnemonic"),
+                IntNetwork: c.String("int-network"),
+                IntAddress: c.String("int-address"),
+                ExtNetwork: c.String("ext-network"),
+                ExtAddress: c.String("ext-address"),
+                Host: c.String("host"),
+                Lang: c.String("lang"),
+                NetworkId: c.String("network-id"),
+                AccessKey: c.String("access-key"),
+                AccessSecret: c.String("access-secret"),
+            }
+            sendMessage(msgContext, c.String("host"), token)
         }
-        sendMessage(msgContext, c.String("host"), token)
 
         return nil
     }
