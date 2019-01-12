@@ -169,12 +169,17 @@ func main() {
         cli.StringFlag{
             Name: "action",
             Value: "send",
-            Usage: "send, or recv, or refresh",
+            Usage: "set action: send, or recv, or refresh",
         },
         cli.StringFlag{
             Name: "message",
             Value: "",
             Usage: "set message it will send to server",
+        },
+        cli.StringFlag{
+            Name: "file",
+            Value: "",
+            Usage: "set file path instead of message",
         },
         cli.StringFlag{
             Name: "format",
@@ -183,7 +188,7 @@ func main() {
         },
         cli.StringFlag{
             Name: "delimiter",
-            Value: ",",
+            Value: "comma",
             Usage: "set delimiter: comma, or pipeline, or more",
         },
         cli.StringFlag{
@@ -307,10 +312,20 @@ func main() {
             }
             recvMessages(c.String("network-id"), token, c.String("host"), c.String("protocol"))
         } else {
+            // set message
+            message := c.String("message")
+
+            // set message by file
+            if c.String("file") != "" {
+                bytes, err := ioutil.ReadFile(c.String("file"))
+                check(err)
+                message = fmt.Sprintf("%s", bytes)
+            }
+
             // set message context
             msgContext := MessageContext{
                 Status: "published",
-                Message: c.String("message"),
+                Message: message,
                 Agent: c.String("agent"),
                 Format: c.String("format"),
                 Delimiter: c.String("delimiter"),
