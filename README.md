@@ -11,6 +11,9 @@ $ ./catswords-cli --email [your email] --password [your password]
 
 3. send message
 $ ./catswords-cli --message "hello world" --network-id [your network id]
+
+4. refresh token
+$ ./catswords-cli --email [your email] --password [your password] --action refresh
 ```
 
 ## show help
