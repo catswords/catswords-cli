@@ -1,6 +1,18 @@
 # catswords-cli
 catswords-cli
 
+## tutorial
+```
+1. tutorial video
+https://youtu.be/VJhGeX5J1wA
+
+2. autienticate
+$ ./catswords-cli --email [your email] --password [your password]
+
+3. send message
+$ ./catswords-cli --message "hello world" --network-id [your network id]
+```
+
 ## show help
 ```
 $ ./catswords-cli help
