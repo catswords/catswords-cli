@@ -14,6 +14,10 @@ import (
     "io/ioutil"
     "github.com/urfave/cli"
     "gopkg.in/resty.v1"
+    "crypto/md5"
+    "crypto/sha1"
+    "crypto/sha256"
+    "crypto/sha512"
 )
 
 type User struct {
@@ -59,15 +63,19 @@ type MessageContext struct {
     Protocol string `json:"protocol"`
 }
 
+type HashResult struct {
+    HashFunction string `json:"hash_function"`
+    HashValue string `json:"hash_value"`
+}
+
 func check(e error) {
     if e != nil {
         panic(e)
     }
 }
 
-func authenticate (email string, password string, host string, protocol string) string {
-    var auth AuthSuccess
-
+func authenticate(email string, password string, host string, protocol string) string {
+    auth := new(AuthSuccess)
     user := &User{Email: email, Password: password}
     body, err := json.Marshal(user)
     check(err)
@@ -110,6 +118,40 @@ func recvMessages(networkId string, token string, host string, protocol string) 
     check(err)
 
     fmt.Println(resp)
+}
+
+func getHashResult(msgBytes []byte, hashFunction string) *HashResult {
+    result := new(HashResult)
+    checksum := ""
+
+    if hashFunction == "md5" {
+        hasher := md5.New()
+        hasher.Write(msgBytes)
+        checksum = fmt.Sprintf("%x", hasher.Sum(nil))
+    }
+
+    if hashFunction == "sha1" {
+        hasher := sha1.New()
+        hasher.Write(msgBytes)
+        checksum = fmt.Sprintf("%x", hasher.Sum(nil))
+    }
+
+    if hashFunction == "sha256" {
+        hasher := sha256.New()
+        hasher.Write(msgBytes)
+        checksum = fmt.Sprintf("%x", hasher.Sum(nil))
+    }
+
+    if hashFunction == "sha512" {
+        hasher := sha512.New()
+        hasher.Write(msgBytes)
+        checksum = fmt.Sprintf("%x", hasher.Sum(nil))
+    }
+
+    result.HashFunction = hashFunction
+    result.HashValue = checksum
+
+    return result
 }
 
 func main() {
@@ -314,44 +356,56 @@ func main() {
         } else {
             // set message
             message := c.String("message")
+            msgBytes := []byte(message)
 
             // set message by file
             if c.String("file") != "" {
                 bytes, err := ioutil.ReadFile(c.String("file"))
                 check(err)
+                msgBytes = bytes
                 message = fmt.Sprintf("%s", bytes)
             }
 
-            // set message context
-            msgContext := MessageContext{
-                Status: "published",
-                Message: message,
-                Agent: c.String("agent"),
-                Format: c.String("format"),
-                Delimiter: c.String("delimiter"),
-                Encoding: c.String("encoding"),
-                Mime: c.String("mime"),
-                Label: c.String("label"),
-                Encryption: c.String("encryption"),
-                EncryptionKey: c.String("encryption-key"),
-                EncryptionIv: c.String("encryption-iv"),
-                PrivateKey: c.String("private-key"),
-                PublicKey: c.String("public-key"),
-                HashFunction: c.String("hash-function"),
-                HashValue: c.String("hash-value"),
-                Mnemonic: c.String("mnemonic"),
-                IntNetwork: c.String("int-network"),
-                IntAddress: c.String("int-address"),
-                ExtNetwork: c.String("ext-network"),
-                ExtAddress: c.String("ext-address"),
-                Host: c.String("host"),
-                Lang: c.String("lang"),
-                NetworkId: c.String("network-id"),
-                AccessKey: c.String("access-key"),
-                AccessSecret: c.String("access-secret"),
-                Protocol: c.String("protocol"),
+            // get hash
+            if c.String("action") == "hash" {
+                hashResult := getHashResult(msgBytes, c.String("hash-function"))
+                body, err := json.Marshal(hashResult)
+                check(err)
+                fmt.Println(fmt.Sprintf("%s", body))
             }
-            sendMessage(msgContext, token, c.String("host"), c.String("protocol"))
+
+            // set message context
+            if c.String("action") == "send" {
+                msgContext := MessageContext{
+                    Status: "published",
+                    Message: message,
+                    Agent: c.String("agent"),
+                    Format: c.String("format"),
+                    Delimiter: c.String("delimiter"),
+                    Encoding: c.String("encoding"),
+                    Mime: c.String("mime"),
+                    Label: c.String("label"),
+                    Encryption: c.String("encryption"),
+                    EncryptionKey: c.String("encryption-key"),
+                    EncryptionIv: c.String("encryption-iv"),
+                    PrivateKey: c.String("private-key"),
+                    PublicKey: c.String("public-key"),
+                    HashFunction: c.String("hash-function"),
+                    HashValue: c.String("hash-value"),
+                    Mnemonic: c.String("mnemonic"),
+                    IntNetwork: c.String("int-network"),
+                    IntAddress: c.String("int-address"),
+                    ExtNetwork: c.String("ext-network"),
+                    ExtAddress: c.String("ext-address"),
+                    Host: c.String("host"),
+                    Lang: c.String("lang"),
+                    NetworkId: c.String("network-id"),
+                    AccessKey: c.String("access-key"),
+                    AccessSecret: c.String("access-secret"),
+                    Protocol: c.String("protocol"),
+                }
+                sendMessage(msgContext, token, c.String("host"), c.String("protocol"))
+            }
         }
         return nil
     }
