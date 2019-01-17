@@ -14,6 +14,9 @@ $ ./catswords-cli --message "hello world" --network-id [your network id]
 
 4. refresh token
 $ ./catswords-cli --email [your email] --password [your password] --action refresh
+
+5. get hash from file
+$ ./catswords-cli --file catswords-cli --action hash --hasher sha1 --action hash
 ```
 
 ## show help
