@@ -332,12 +332,12 @@ func main() {
         cli.StringFlag{
             Name: "time-to-live,ttl",
             Value: 0,
-            Usage: "limits the number of reading devices",
+            Usage: "set limits the number of reading devices",
         },
         cli.StringFlag{
             Name: "limit",
             Value: 128,
-            Usage: "limit the number of receving messages",
+            Usage: "set limit the number of receving messages",
         }
     }
 
