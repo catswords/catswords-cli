@@ -115,7 +115,7 @@ func recvMessages(networkId string, token string, host string, protocol string, 
     resp, err := resty.R().
           SetHeader("Accept", "application/json").
           SetAuthToken(token).
-          Get(fmt.Sprintf("%s://%s/_/items/catswords_cli?filter[network_id][eq]=%s&limit=%s&sort=-id", protocol, host, networkId, limit))
+          Get(fmt.Sprintf("%s://%s/_/items/catswords_cli?filter[network_id][eq]=%s&limit=%d&sort=-id", protocol, host, networkId, limit))
     check(err)
 
     fmt.Println(resp)
