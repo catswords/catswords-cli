@@ -61,7 +61,7 @@ type MessageContext struct {
     AccessKey string `json:"access_key"`
     AccessSecret string `json:"access_secret"`
     Protocol string `json:"protocol"`
-    TimeToLive string `json:"time_to_live"`
+    TimeToLive int64 `json:"time_to_live"`
 }
 
 type HashResult struct {
@@ -111,7 +111,7 @@ func sendMessage(context MessageContext, token string, host string, protocol str
     fmt.Println(resp)
 }
 
-func recvMessages(networkId string, token string, host string, protocol string, limit string) {
+func recvMessages(networkId string, token string, host string, protocol string, limit int64) {
     resp, err := resty.R().
           SetHeader("Accept", "application/json").
           SetAuthToken(token).
@@ -331,12 +331,12 @@ func main() {
         },
         cli.StringFlag{
             Name: "time-to-live,ttl",
-            Value: 0,
+            Value: "0",
             Usage: "set limit of hits (Time to Live)",
         },
         cli.StringFlag{
             Name: "limit",
-            Value: 32,
+            Value: "32",
             Usage: "set limit of messages",
         }
     }
@@ -363,7 +363,7 @@ func main() {
                 fmt.Println("You must be set network ID '--network-id [your network ID]'")
                 return nil
             }
-            recvMessages(c.String("network-id"), token, c.String("host"), c.String("protocol"), c.String("limit"))
+            recvMessages(c.String("network-id"), token, c.String("host"), c.String("protocol"), c.Int64("limit"))
         } else {
             // set message
             message := c.String("message")
@@ -414,6 +414,7 @@ func main() {
                     AccessKey: c.String("access-key"),
                     AccessSecret: c.String("access-secret"),
                     Protocol: c.String("protocol"),
+                    TimeToLive: c.Int64("time-to-live"),
                 }
                 sendMessage(msgContext, token, c.String("host"), c.String("protocol"))
             }
