@@ -61,6 +61,7 @@ type MessageContext struct {
     AccessKey string `json:"access_key"`
     AccessSecret string `json:"access_secret"`
     Protocol string `json:"protocol"`
+    TimeToLive string `json:"time_to_live"`
 }
 
 type HashResult struct {
@@ -110,11 +111,11 @@ func sendMessage(context MessageContext, token string, host string, protocol str
     fmt.Println(resp)
 }
 
-func recvMessages(networkId string, token string, host string, protocol string) {
+func recvMessages(networkId string, token string, host string, protocol string, limit string) {
     resp, err := resty.R().
           SetHeader("Accept", "application/json").
           SetAuthToken(token).
-          Get(fmt.Sprintf("%s://%s/_/items/catswords_cli?filter[network_id][eq]=%s", protocol, host, networkId))
+          Get(fmt.Sprintf("%s://%s/_/items/catswords_cli?filter[network_id][eq]=%s&limit=%s&sort=-id", protocol, host, networkId, limit))
     check(err)
 
     fmt.Println(resp)
@@ -328,6 +329,16 @@ func main() {
             Value: "",
             Usage: "set access secret",
         },
+        cli.StringFlag{
+            Name: "time-to-live,ttl",
+            Value: 0,
+            Usage: "set limit of hits (Time to Live)",
+        },
+        cli.StringFlag{
+            Name: "limit",
+            Value: 32,
+            Usage: "set limit of messages",
+        }
     }
 
     app.Action = func(c *cli.Context) error {
@@ -352,7 +363,7 @@ func main() {
                 fmt.Println("You must be set network ID '--network-id [your network ID]'")
                 return nil
             }
-            recvMessages(c.String("network-id"), token, c.String("host"), c.String("protocol"))
+            recvMessages(c.String("network-id"), token, c.String("host"), c.String("protocol"), c.String("limit"))
         } else {
             // set message
             message := c.String("message")
