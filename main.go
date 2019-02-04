@@ -62,6 +62,9 @@ type MessageContext struct {
     AccessSecret string `json:"access_secret"`
     Protocol string `json:"protocol"`
     TimeToLive int64 `json:"time_to_live"`
+    Latitude float64 `json:"latitude"`
+    Longitude float64 `json:"longitude"`
+    Geohash string `json:"geohash"`
 }
 
 type HashResult struct {
@@ -338,7 +341,27 @@ func main() {
             Name: "limit",
             Value: 128,
             Usage: "set limit the number of receving messages",
-        }
+        },
+        cli.StringFlag{
+            Name: "latitude,lat",
+            Value: "",
+            Usage: "set latitude",
+        },
+        cli.StringFlag{
+            Name: "latitude,lat",
+            Value: "",
+            Usage: "set latitude",
+        },
+        cli.StringFlag{
+            Name: "longitude,lon",
+            Value: "",
+            Usage: "set longitude",
+        },
+        cli.StringFlag{
+            Name: "geohash",
+            Value: "",
+            Usage: "set geohash",
+        },
     }
 
     app.Action = func(c *cli.Context) error {
@@ -415,6 +438,9 @@ func main() {
                     AccessSecret: c.String("access-secret"),
                     Protocol: c.String("protocol"),
                     TimeToLive: c.Int64("time-to-live"),
+                    Latitude: c.Float64("latitude"),
+                    Longitude: c.Float64("longitude"),
+                    Geohash: c.Float64("geohash"),
                 }
                 sendMessage(msgContext, token, c.String("host"), c.String("protocol"))
             }
