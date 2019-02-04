@@ -70,6 +70,12 @@ GLOBAL OPTIONS:
    --network-id value, --netid value      set network ID
    --access-key value, --akey value       set access key
    --access-secret value, --asec value    set access secret
+   --time-to-live value, --ttl value      set limits the number of reading devices
+   --limit value                          set limit the number of receving messages (default: "128")
+   --latitude value, --lat value          set latitude
+   --longitude value, --lon value         set longitude
+   --geohash value                        set geohash
+   --planet value                         set planet
    --help, -h                             show help
    --version, -v                          print the version
 
