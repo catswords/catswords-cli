@@ -66,6 +66,7 @@ type MessageContext struct {
     Latitude float64 `json:"latitude"`
     Longitude float64 `json:"longitude"`
     Geohash string `json:"geohash"`
+    Planet string `json:"planet"`
 }
 
 type HashResult struct {
@@ -335,18 +336,13 @@ func main() {
         },
         cli.StringFlag{
             Name: "time-to-live,ttl",
-            Value: 0,
+            Value: "",
             Usage: "set limits the number of reading devices",
         },
         cli.StringFlag{
             Name: "limit",
-            Value: 128,
+            Value: "128",
             Usage: "set limit the number of receving messages",
-        },
-        cli.StringFlag{
-            Name: "latitude,lat",
-            Value: "",
-            Usage: "set latitude",
         },
         cli.StringFlag{
             Name: "latitude,lat",
@@ -362,6 +358,11 @@ func main() {
             Name: "geohash",
             Value: "",
             Usage: "set geohash",
+        },
+        cli.StringFlag{
+            Name: "planet",
+            Value: "",
+            Usage: "set planet",
         },
     }
 
@@ -441,7 +442,8 @@ func main() {
                     TimeToLive: c.Int64("time-to-live"),
                     Latitude: c.Float64("latitude"),
                     Longitude: c.Float64("longitude"),
-                    Geohash: c.Float64("geohash"),
+                    Geohash: c.String("geohash"),
+                    Planet: c.String("planet"),
                 }
                 sendMessage(msgContext, token, c.String("host"), c.String("protocol"))
             }
