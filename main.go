@@ -162,9 +162,9 @@ func getHashResult(msgBytes []byte, hashFunction string) *HashResult {
 
 func main() {
     app := cli.NewApp()
-    app.Name = "Catswords Community CLI"
-    app.Usage = "Message broadcaster"
-    app.Version = "0.1"
+    app.Name = "Catswords Community CLI (catwords-cli)"
+    app.Usage = "The awesome command line tool to keep work-life balance for developers"
+    app.Version = "1.4-dev"
     app.Compiled = time.Now()
     app.Authors = []cli.Author{
         cli.Author{
