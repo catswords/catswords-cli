@@ -1,7 +1,8 @@
 // @file main.go
-// @brief Catswords Community CLI
+// @brief Catswords Community CLI (catswords-cli)
 // @author Go Namhyeon <gnh1201@gmail.com>
-// @created 2019-01-09
+// @created_at 2019-01-09
+// @updated_at 2019-02-05
 
 package main
 
