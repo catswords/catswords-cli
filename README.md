@@ -33,8 +33,7 @@ VERSION:
 
 AUTHORS:
    Go Namhyeon <gnh1201@gmail.com>
-   Catswords Community <support@exts.kr>
-   Catswords Research <support@2s.re.kr>
+   Catswords Research <support@exts.kr>
 
 COMMANDS:
      help, h  Shows a list of commands or help for one command
