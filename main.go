@@ -185,7 +185,7 @@ func main() {
     app.Flags = []cli.Flag {
         cli.StringFlag{
             Name: "host",
-            Value: "2s.re.kr",
+            Value: "catswords.re.kr",
             Usage: "set server hostname",
         },
         cli.StringFlag{
